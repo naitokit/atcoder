@@ -103,3 +103,64 @@ class GridDFS:
         self.visited = [[-1]*self.W for _ in range(self.H)]
         self.Dxy = Dxy
         self._dfs(start_x, start_y)
+
+class NodeDFS:
+    """
+    Nodeグラフの深さ優先探索.
+    
+    Attributes
+    ----------
+    graph : list
+        対象のNodeグラフ.
+    N : int
+        グラフのnode数.
+    visited : list
+        graph[node]が探索済みか.
+    """
+    def __init__(self, N, graph):
+        """
+        Parameters
+        ----------
+        graph : list
+            対象のNodeグラフ.
+            N個のnodeで構成.
+            graph = [[0番目のnodeに接続されるnode番号],[1番目のnodeに接続されるnode番号],[2番目のnodeに接続されるnode番号],...]
+        """
+        self.N = N
+        self.graph = graph
+
+    def _dfs(self, node):
+        # ----------------------------------------
+        # nodeに来たときの、最初の処理.
+        # 最初の1度だけ処理される.
+        # visitedの更新など.
+        self.seen[node] = 1
+        # ----------------------------------------
+        for nv in self.graph[node]:
+            # ----------------------------------------
+            # nodeに来たときの次の処理
+            # 最初に加え、戻ってきたときにも処理される.
+            # 次の座標更新など.
+            # ----------------------------------------
+            if self.seen[nv] == 0:
+                self._dfs(nv)
+                # ----------------------------------------
+                # nodeに戻ってきたときの処理.
+                # 戻ってくると、self._dfsから再開される.
+                # self.visited[node]=0などの再探索の初期化など.
+                # ----------------------------------------
+
+    def run_dfs(self, start):
+        """
+        dfsの実行.
+
+        Parameters
+        ----------
+        start : int
+            探索開始するnode番号
+        """
+        self.visited = [0]*self.N
+        if self.visited[start] == 1:
+            return
+        else:
+            self._dfs(start)
