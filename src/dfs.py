@@ -1,9 +1,12 @@
 import sys
 sys.setrecursionlimit(10**6)
 
+# -------------------------------------------------------
+# GridDFS系
+# -------------------------------------------------------
 class GridDFS:
     """
-    Gridグラフの深さ優先探索.
+    Gridグラフの深さ優先探索の基本クラス.
     
     Attributes
     ----------
@@ -87,7 +90,6 @@ class GridDFS:
                 # 戻ってくると、self._dfsから再開される.
                 # self.visited[ny][nx]=0などの再探索の初期化など.
                 # ----------------------------------------
-
     def run_dfs(self, start_x, start_y, Dxy):
         """
         dfsの実行.
@@ -104,9 +106,49 @@ class GridDFS:
         self.Dxy = Dxy
         self._dfs(start_x, start_y)
 
+class GridDFS_is_route:
+    """
+    Gridグラフに対し、startからendまでの経路が存在するかの判定.
+    startとgoalをrunメソッドに渡して、dfsで探索.
+    """
+    def __init__(self, graph):
+        self.graph = graph
+        self.H = len(graph)
+        self.W = len(graph[0])
+        self.ans = 0
+    def _Is_valid_graph(self, y, x):
+        if x < 0 or  self.W <= x or y < 0 or self.H <= y:
+            return 0
+        elif self.visited[y][x] == 1:
+            return 0
+        elif self.graph[y][x] == '#':
+            return 0
+        else:
+            return 1
+    def _dfs(self, x, y):
+        self.visited[y][x] = 1
+        if y == self.goal_y and x == self.goal_x:
+            self.ans = 1
+        for dx, dy in self.Dxy:
+            nx = x + dx
+            ny = y + dy
+            if self._Is_valid_graph(ny, nx) == 0:
+                continue
+            else:
+                self._dfs(nx, ny)
+    def run_dfs(self, start_x, start_y, goal_x, goal_y, Dxy):
+        self.visited = [[-1]*self.W for _ in range(self.H)]
+        self.Dxy = Dxy
+        self.goal_x = goal_x
+        self.goal_y = goal_y
+        self._dfs(start_x, start_y)
+
+# -------------------------------------------------------
+# NodeDFS系
+# -------------------------------------------------------
 class NodeDFS:
     """
-    Nodeグラフの深さ優先探索.
+    Nodeグラフの深さ優先探索の基本クラス.
     
     Attributes
     ----------
@@ -134,7 +176,7 @@ class NodeDFS:
         # nodeに来たときの、最初の処理.
         # 最初の1度だけ処理される.
         # visitedの更新など.
-        self.seen[node] = 1
+        self.visited[node] = 1
         # ----------------------------------------
         for nv in self.graph[node]:
             # ----------------------------------------
@@ -142,14 +184,13 @@ class NodeDFS:
             # 最初に加え、戻ってきたときにも処理される.
             # 次の座標更新など.
             # ----------------------------------------
-            if self.seen[nv] == 0:
+            if self.visited[nv] == 0:
                 self._dfs(nv)
                 # ----------------------------------------
                 # nodeに戻ってきたときの処理.
                 # 戻ってくると、self._dfsから再開される.
                 # self.visited[node]=0などの再探索の初期化など.
                 # ----------------------------------------
-
     def run_dfs(self, start):
         """
         dfsの実行.
@@ -164,3 +205,28 @@ class NodeDFS:
             return
         else:
             self._dfs(start)
+
+class NodeDFS_cnt_connect:
+    """
+    Nodeグラフにて、連結成分を数え上げるクラス.
+    各nodeに対し、
+        探索ずみ -> continue
+        未探索 -> cnt++して、dfsでvisitedを更新.
+    """
+    def __init__(self, N, graph):
+        self.N = N
+        self.graph = graph
+    def _dfs(self, node):
+        self.visited[node] = 1
+        for nv in self.graph[node]:
+            if self.visited[nv] == 0:
+                self._dfs(nv)
+    def run_dfs(self):
+        self.visited = [0]*self.N
+        self.cnt = 0
+        for i in range(self.N):
+            if self.visited[i] == 1:
+                continue
+            else:
+                self.cnt += 1
+                self._dfs(i)
