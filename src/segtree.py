@@ -98,6 +98,7 @@ class Segtree:
         """
         init_valの要素の更新.
         init_val[k] = xにしたときにtreeを更新する.
+        kは、init_val=[a0,a1,...,an-1]のindex
         計算量は、O(logN)
 
         Parameters
@@ -116,6 +117,7 @@ class Segtree:
     def query(self, left_target, right_target, l, r, u):
         """
         区間[left,right)のおけるsegfuncの値を計算.
+        indexは、init_val=[a1,a2,...,an]として指定.
         ex init_val=[a0,a1,a2,...,ak]における、[a2,..,a5]の区間を見たい場合、
             left = 2+1 = 3(1-indexに変更)
             right = 5+1+1 = 7(1-indexに変更 & rightが開区間なので1つ増やす)
