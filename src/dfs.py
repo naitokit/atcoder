@@ -230,3 +230,86 @@ class NodeDFS_cnt_connect:
             else:
                 self.cnt += 1
                 self._dfs(i)
+
+class NodeDFS_calc_maxcost:
+    """
+    Nodeグラフの深さ優先探索で、最大コストを計算するクラス.
+    _dfs(now,pre,now_cost)の引数は各Nodeに対して割り当てることが可能.
+    now_cost
+        selfにする場合：Nodeに戻ってきたときに戻す必要あり.
+        引数にする場合：各Nodeごとに割り当て割れるので、戻す必要なし.
+    
+    Attributes
+    ----------
+    graph : list
+        対象のNodeグラフ.
+    N : int
+        グラフのnode数.
+    visited : list
+        graph[node]が探索済みか.
+    max_cost : int
+        最大のコスト.
+    """
+    def __init__(self, N, graph):
+        """
+        Parameters
+        ----------
+        graph : list
+            対象のNodeグラフ.
+            N個のnodeで構成.
+            graph = [[[node,cost],[node,cost]...],[[node,cost],[node,cost]...],[[node,cost],[node,cost]...]
+        """
+        self.N = N
+        self.graph = graph
+    def _dfs(self, now, pre, now_cost):
+        """
+        Parameters
+        ----------
+        now : int
+            現在のNode番号.
+        pre : int
+            1つ前のNode番号
+        now_cost : int
+            startからnowまでのコストの合計.
+            selfではなく、通常の変数にすることで、各Nodeごとにnow_costが割り当てられる.
+        """
+        # ----------------------------------------
+        # nodeに来たときの、最初の処理.
+        # 最初の1度だけ処理される.
+        # visitedの更新とmax_costの更新
+        self.visited[now] = 1
+        self.max_cost = max(self.max_cost, now_cost)
+        # ----------------------------------------
+        for to,cost in self.graph[now]:
+            # ----------------------------------------
+            # nodeに来たときの次の処理
+            # 最初に加え、戻ってきたときにも処理される.
+            # 次の座標更新など.
+            # ----------------------------------------
+            if to != pre and self.visited[to] == 0:
+                self._dfs(now=to, pre=now, now_cost=now_cost+cost)
+                # ----------------------------------------
+                # nodeに戻ってきたときの処理.
+                # 戻ってくると、self._dfsから再開される.
+                # self.visited[node]=0などの再探索の初期化など.
+                # ----------------------------------------
+                self.visited[to] = 0
+
+    def run_dfs_maxcost(self, start):
+        """
+        dfsの実行.
+        startから出発して、取りうる最大のコストを計算.
+        self.max_costに格納.
+
+        Parameters
+        ----------
+        start : int
+            探索開始するnode番号
+        """
+        self.visited = [0]*self.N
+        self.max_cost = 0
+
+        if self.visited[start] == 1:
+            return -1
+        else:
+            self._dfs(now=start, pre=-1, now_cost=0)
