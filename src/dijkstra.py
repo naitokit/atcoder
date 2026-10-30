@@ -1,4 +1,5 @@
 import heapq
+
 class Dijkstra:
     def __init__(self,N,graph):
         self.N = N
