@@ -2,6 +2,8 @@
 # utils
 # -----------------------------------
 from .utils import merge_intervals
+from .utils import get_primes
+from .utils import is_prime
 
 # -----------------------------------
 # Binarysearch

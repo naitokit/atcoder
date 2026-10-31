@@ -46,3 +46,57 @@ def merge_intervals(intervals):
     ans.append([left, right])
 
     return ans
+
+def is_prime(N):
+    """
+    Check whether an integer is a prime number.
+
+    Args:
+        N (int): Integer to be tested.
+
+    Returns:
+        bool: True if N is prime, otherwise False.
+
+    Time Complexity:
+        O(sqrt(N))
+
+    Space Complexity:
+        O(1)
+    """
+    if N < 2:
+        return False
+
+    for i in range(2, int(N**0.5) + 1):
+        if N % i == 0:
+            return False
+
+    return True
+
+def get_primes(L, R):
+    """
+    Enumerate all prime numbers in the inclusive interval [L, R]
+    using the Sieve of Eratosthenes.
+
+    Args:
+        L (int): Lower bound of the interval (inclusive).
+        R (int): Upper bound of the interval (inclusive).
+
+    Returns:
+        list[int]: A list of prime numbers in the interval [L, R].
+
+    Time Complexity:
+        O(R log log R)
+
+    Space Complexity:
+        O(R)
+    """
+    is_prime = [True] * (R + 1)
+    is_prime[0] = False
+    is_prime[1] = False
+
+    for i in range(2, int(R**0.5) + 1):
+        if is_prime[i]:
+            for j in range(i * i, R + 1, i):
+                is_prime[j] = False
+
+    return [i for i in range(L, R + 1) if is_prime[i]]
