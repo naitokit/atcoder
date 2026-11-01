@@ -1,3 +1,6 @@
+# -----------------------------------
+# 1次元
+# -----------------------------------
 def Cusum1D(lis):
     """
     1次元累積和を計算する。
@@ -47,3 +50,93 @@ def imos1D(lisLR,N):
         if right != N-1:
             lis_imos[right+1] -= 1
     return Cusum1D(lis=lis_imos)
+
+# -----------------------------------
+# 2次元
+# -----------------------------------
+def Cusum2D(lis):
+    """
+    2次元累積和を計算する。
+
+    Args:
+        lis (list[list[int]]): 累積和を計算する2次元リスト。
+
+    Returns:
+        list[list[int]]: 2次元累積和のリスト。
+            Cusum[i][j] は、
+            lis[0][0] から lis[i][j] までの
+            矩形領域の要素の総和。
+
+    Time Complexity:
+        O(H * W)
+        H は入力リストの行数、W は列数。
+
+    Space Complexity:
+        O(H * W)
+
+    Example:
+        lis = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ]
+
+        Cusum = [
+            [1,  3,  6],
+            [5, 12, 21],
+            [12, 27, 45]
+        ]
+    """
+    H = len(lis)
+    W = len(lis[0])
+
+    Cusum = [[0]*W for _ in range(H)]
+
+    for i in range(H):
+        for j in range(W):
+            if i == 0 and j == 0:
+                Cusum[i][j] = lis[i][j]
+            elif i == 0:
+                Cusum[i][j] = Cusum[i][j-1] + lis[i][j]
+            elif j == 0:
+                Cusum[i][j] = Cusum[i-1][j] + lis[i][j]
+            else:
+                Cusum[i][j] = (
+                    Cusum[i-1][j]
+                    + Cusum[i][j-1]
+                    - Cusum[i-1][j-1]
+                    + lis[i][j]
+                )
+
+    return Cusum
+
+def GetSum2D(Cusum, x1, y1, x2, y2):
+    """
+    2次元累積和から矩形領域の総和を取得する。
+    座標は0-indexed、両端を含む。
+
+    Args:
+        Cusum (list[list[int]]): 2次元累積和。
+        x1 (int): 矩形領域の左上の行番号。
+        y1 (int): 矩形領域の左上の列番号。
+        x2 (int): 矩形領域の右下の行番号。
+        y2 (int): 矩形領域の右下の列番号。
+
+    Returns:
+        int: 矩形領域の総和。
+
+    Time Complexity:
+        O(1)
+    """
+    ans = Cusum[x2][y2]
+
+    if x1 > 0:
+        ans -= Cusum[x1-1][y2]
+
+    if y1 > 0:
+        ans -= Cusum[x2][y1-1]
+
+    if x1 > 0 and y1 > 0:
+        ans += Cusum[x1-1][y1-1]
+
+    return ans
